@@ -1,8 +1,3 @@
-defmodule Roygbiv.Node do
-  defstruct  ip: nil, name: nil, state: nil, colour: nil
-  @type t :: %__MODULE__{ip: tuple, name: String.t, state: integer, colour: String.t}
-end
-
 defmodule Roygbiv.DiscoveryState do
   defstruct  socket: nil, nodes: [], interval: nil
   @type t :: %__MODULE__{socket: pid, nodes: list, interval: reference }
@@ -10,7 +5,8 @@ end
 
 defmodule Roygbiv.Discovery do
   use GenServer
-  @multicastaddr {239,255,255,255}
+  # wanted to use multicast, but was having problems with it. bun it - broadcasting...
+  @multicastaddr {255,255,255,255}
   @multicastport 2025
 
   def start_link() do
@@ -18,46 +14,84 @@ defmodule Roygbiv.Discovery do
   end
 
   def init(%Roygbiv.DiscoveryState{} = state) do
-     {:ok, socket} = :gen_udp.open(0, [:binary,
-                                       :inet, {:ip, {192,168,1,43} },
-                                       {:active, true},
-                                       {:multicast_if, {192,168,1,43}},
-                                       {:multicast_ttl, 2},
-                                       {:add_membership, {@multicastaddr, {192,168,1,43}} }])
+
+    udp_opts = [:binary,
+                {:active, true},
+                {:reuseaddr, true},
+                {:broadcast, true}]
+
+     {:ok, socket} = :gen_udp.open(0 ,udp_opts)
 
       #fire two udp discover packets immediatly
       :gen_udp.send(socket, @multicastaddr, @multicastport , "helloo" )
-      :gen_udp.send(socket, @multicastaddr, @multicastport , "answer meee" )
-      {:ok, disc_interval} = :timer.apply_interval(10000, :gen_udp, :send, [socket, @multicastaddr, @multicastport , "HI AGAIN"])
+      :gen_udp.send(socket, @multicastaddr, @multicastport , "helloo" )
 
+      #:gen_udp.controlling_process(socket, self())
+      #:gen_udp.send(socket, @multicastaddr, @multicastport , "answer meee" )
+      {:ok, disc_interval} = :timer.apply_interval(30000, :gen_udp, :send, [socket, @multicastaddr, @multicastport , "HI AGAIN"])
       {:ok, %Roygbiv.DiscoveryState{state | socket: socket, interval: disc_interval}}
+
+      #{:ok, %Roygbiv.DiscoveryState{socket: socket}}
    end
 
+
+   def nodes() do
+     GenServer.call( __MODULE__, :nodes)
+   end
 
   def run() do
     GenServer.cast( __MODULE__, :discover)
   end
 
-def handle_cast(:discover, state) do
-  :gen_udp.send(state.socket, @multicastaddr, @multicastport, "some msg!")
+  def set_group() do
+    GenServer.cast( __MODULE__, :discover)
+  end
+
+def handle_cast(:discover, %Roygbiv.DiscoveryState{socket: socket} = state) do
+  :gen_udp.send(socket, @multicastaddr, @multicastport, "somemsg!")
   :gen_udp.send(state.socket, @multicastaddr, @multicastport, "HI!")
-  {:noreply, state }
+  {:noreply, %Roygbiv.DiscoveryState{ state | socket: socket} }
 end
 
+def handle_call(:nodes, _from, %Roygbiv.DiscoveryState{nodes: nodes} = state) do
+  {:reply, nodes, state }
+end
+
+
 def handle_info({:udp, _socket, ip, _fromport, packet}, state) do
-      IO.inspect ip
-      json_resp =  Poison.decode!(packet)
-      node = %Roygbiv.Node{ip: :inet.ntoa(ip),
-                           name: json_resp["device"],
-                           state: json_resp["state"],
-                           colour: json_resp["colour"] }
-      case (Enum.find_index(state.nodes, fn(n)-> n.name == node.name end)) do
-        nil ->
-          {:noreply, %Roygbiv.DiscoveryState{state | nodes: [ node | state.nodes]}}
-         idx ->
-          {:noreply, state}
+      case decode_response(packet) do
+        {:error, reason} ->
+            IO.puts reason
+            {:noreply, state}
+        json_resp ->
+          node = %Roygbiv.NodeState{ip: :inet.ntoa(ip),
+                               name: json_resp["device"],
+                               state: json_resp["state"],
+                               colour: json_resp["hex"] }
+
+          start_or_update_node(node)
       end
 
+      {:noreply, state}
+  end
+
+  def start_or_update_node(node) do
+    case (Roygbiv.Node.start_link(node)) do
+      {:error, {:already_started, pid}} ->
+        #OK refresh
+         Roygbiv.Node.refresh_state(node)
+         {:ok, {:refreshed, pid}}
+       {:ok, pid} ->
+         {:ok, {:started, pid}}
     end
+  end
+
+  def decode_response(packet) do
+    case Poison.decode(packet) do
+      {:ok, json_status} -> json_status
+        _ ->
+       {:error, "cannot decode json response"}
+    end
+  end
 
 end

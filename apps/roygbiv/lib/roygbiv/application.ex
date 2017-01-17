@@ -11,6 +11,7 @@ defmodule Roygbiv.Application do
     # Define workers and child supervisors to be supervised
     children = [
       # Starts a worker by calling: Roygbiv.Worker.start_link(arg1, arg2, arg3)
+      supervisor(Registry, [:unique, :node_process_registry]),
       worker(Roygbiv.Discovery, []),
     ]
 
