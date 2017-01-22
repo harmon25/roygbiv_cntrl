@@ -1,0 +1,40 @@
+{
+  "name": "roygbiv_cntrl",
+  "version": "1.0.0",
+  "description": "**TODO: Add description**",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build:dev": "./node_modules/webpack/bin/webpack.js",
+    "build:prod": "./node_modules/webpack/bin/webpack.js -p",
+    "build:watch": "./node_modules/webpack/bin/webpack.js --watch --color"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/harmon25/roygbiv_cntrl.git"
+  },
+  "author": "harmon",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/harmon25/roygbiv_cntrl/issues"
+  },
+  "homepage": "https://github.com/harmon25/roygbiv_cntrl#readme",
+  "dependencies": {
+    "material-ui": "^0.16.7",
+    "react": "^15.4.2",
+    "react-dom": "^15.4.2",
+    "react-redux": "^5.0.2",
+    "react-tap-event-plugin": "^2.0.1",
+    "redux": "^3.6.0"
+  },
+  "devDependencies": {
+    "babel-core": "^6.22.1",
+    "babel-loader": "^6.2.10",
+    "babel-preset-es2015": "^6.22.0",
+    "babel-preset-react": "^6.22.0",
+    "css-loader": "^0.26.1",
+    "style-loader": "^0.13.1",
+    "webpack": "2",
+    "webpack-dev-server": "2"
+  }
+}

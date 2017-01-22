@@ -7,9 +7,9 @@ defmodule Roygbiv.Node do
   require Logger
 
   def start_link(%State{name: device_name} = node) do
-      name = via_tuple(device_name)
-      GenServer.start_link(__MODULE__, node, name: name)
-    end
+    name = via_tuple(device_name)
+    GenServer.start_link(__MODULE__, node, name: name)
+  end
 
   @doc """
   Fetch node details by name
