@@ -41,7 +41,8 @@ defmodule Roygbiv.Controls do
   end
 
   defp name_to_ip(node_name) do
-    %{ip: ip} =  Keyword.fetch!(Discovery.nodes, String.to_atom(node_name))
+
+    %{ip: ip} = Enum.find(Discovery.nodes, %{}, fn node -> node_name == node.name end)
     ip
   end
 

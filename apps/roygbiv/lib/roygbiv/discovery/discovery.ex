@@ -48,19 +48,7 @@ defmodule Roygbiv.Discovery do
     GenServer.cast( __MODULE__, :ping)
   end
 
-  @doc """
-  Start node process if it doesnt exist, update state otherwise.
-  """
-  def start_or_update_node(node) do
-    case (Node.start_link(node)) do
-      {:error, {:already_started, pid}} ->
-        #OK refresh
-          Node.refresh_state(node)
-          {:refreshed, pid}
-       {:ok, pid} ->
-         {:started, pid}
-    end
-  end
+
 
   defp send_ping(socket) do
     :gen_udp.send(socket, @broadcastaddr, @broadcastport, "ping")
@@ -75,9 +63,10 @@ defmodule Roygbiv.Discovery do
   end
 
   def handle_call(:nodes, _from, %State{nodes: nodes} = state) do
+
     node_details =
-    Enum.map(nodes, fn node_name ->
-      {String.to_atom(node_name), Node.node_info(node_name)}
+    Enum.map(nodes, fn node ->
+       Node.node_info(node)
     end)
     {:reply, node_details, state }
   end
@@ -90,7 +79,7 @@ defmodule Roygbiv.Discovery do
       node ->
         node_w_ip = %Roygbiv.Node.State{node | ip: :inet.ntoa(ip)}
 
-        {status, _pid} = start_or_update_node(node_w_ip)
+        {status, _pid} = Node.start_or_update(node_w_ip)
         Logger.info "Reply from #{node.name}: #{Atom.to_string(status)}"
         new_nodes = [ node.name | state.nodes ]
           |> Enum.sort() |> Enum.dedup()

@@ -35,6 +35,13 @@ module.exports = {
   entry: {
     app: './js/app.js',
   },
+  resolve: {
+    extensions: ['.js', '.jsx','.css'],//add '.css'
+    modules: [path.resolve(__dirname, 'node_modules'), path.resolve(__dirname, './apps/phx_web/web/static')]
+  },
+  resolveLoader: {
+    modules: [path.resolve(__dirname, 'node_modules')]
+  },
   module: {
    rules: [
      {
@@ -52,12 +59,12 @@ module.exports = {
        exclude: /(node_modules)/,
        use: [{
          loader: 'babel-loader',
-         options: { presets: ['react', 'es2015'] }
+         options: { presets: ['react', 'es2015', "stage-2"] }
        }],
      },
      {
        test: /\.(jpg|png|gif|eot|svg|ttf|woff|woff2)$/,
-       loader: 'file',
+       use: [{loader: 'file', options: {name: 'fonts/[name].[ext]'} }]
      },
      // Loaders for other file types can go here
    ],

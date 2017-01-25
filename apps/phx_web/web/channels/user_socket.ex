@@ -2,7 +2,7 @@ defmodule PhxWeb.UserSocket do
   use Phoenix.Socket
 
   ## Channels
-  # channel "room:*", PhxWeb.RoomChannel
+  channel "gql:query", PhxWeb.GQL.Channel
 
   ## Transports
   transport :websocket, Phoenix.Transports.WebSocket

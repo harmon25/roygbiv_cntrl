@@ -13,10 +13,14 @@ defmodule PhxWeb.Router do
     plug :accepts, ["json"]
   end
 
+
+  scope "/api" do
+    forward "/graphiql", Absinthe.Plug.GraphiQL, schema: PhxWeb.GQL.Schema
+  end
+
   scope "/", PhxWeb do
     pipe_through :browser # Use the default browser stack
-
-    get "/", PageController, :index
+    get "/*all", PageController, :index
   end
 
   # Other scopes may use custom stacks.

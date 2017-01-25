@@ -19,7 +19,7 @@ defmodule Roygbiv.Mixfile do
   # Type "mix help compile.app" for more information
   def application do
     # Specify extra applications you'll use from Erlang/Elixir
-    [extra_applications: [:logger, :httpoison],
+    [extra_applications: [:logger, :httpoison, :ssdp],
      mod: {Roygbiv.Application, []}]
   end
 
@@ -37,6 +37,6 @@ defmodule Roygbiv.Mixfile do
   #
   # Type "mix help deps" for more examples and options
   defp deps do
-    []
+    [{:ssdp, "~> 0.1.2"}]
   end
 end

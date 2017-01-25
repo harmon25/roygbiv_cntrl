@@ -11,6 +11,21 @@ defmodule Roygbiv.Node do
     GenServer.start_link(__MODULE__, node, name: name)
   end
 
+
+  @doc """
+  Start node process if it doesnt exist, update state otherwise.
+  """
+  def start_or_update(node) do
+    case (start_link(node)) do
+      {:error, {:already_started, pid}} ->
+        #OK refresh
+          refresh_state(node)
+          {:refreshed, pid}
+       {:ok, pid} ->
+         {:started, pid}
+    end
+  end
+
   @doc """
   Fetch node details by name
 
@@ -46,7 +61,7 @@ defmodule Roygbiv.Node do
        {:ok, json_resp} ->
          %State{name: json_resp["device"],
                 state: node_state_to_atom(json_resp["state"]),
-                colour: [hex: json_resp["hex"], int: json_resp["int"]] }
+                colour: %{hex: json_resp["hex"], int: json_resp["int"]}}
        {:error, reason} ->
          Logger.error reason
          nil
