@@ -2,9 +2,10 @@ import ApolloClient from 'apollo-client';
 
 import {createNetworkInterface} from 'apollo-phoenix-websocket'
 
+console.log(window.location)
 
 const networkInterface = createNetworkInterface({
-  uri: 'ws://192.168.1.53:4000/socket',
+  uri: `ws://${window.location.host}/socket`,
   channel: {
     topic: 'gql:query'
   }

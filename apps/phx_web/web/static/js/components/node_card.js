@@ -4,13 +4,20 @@ import FlatButton from 'material-ui/FlatButton';
 import { SliderPicker, CirclePicker, GithubPicker } from 'react-color';
 import Avatar from 'material-ui/Avatar';
 
-import FontIcon from 'material-ui/FontIcon';
 import IconButton from 'material-ui/IconButton';
 import LightBultOutline from 'material-ui/svg-icons/action/lightbulb-outline';
 import FloatingActionButton from 'material-ui/FloatingActionButton';
 import ContentAdd from 'material-ui/svg-icons/content/add';
 import RaisedButton from 'material-ui/RaisedButton';
+import FontIcon from 'material-ui/FontIcon';
 
+import {BottomNavigation, BottomNavigationItem} from 'material-ui/BottomNavigation';
+
+import IconLocationOn from 'material-ui/svg-icons/communication/location-on';
+
+const recentsIcon = <FontIcon className="material-icons">restore</FontIcon>;
+const favoritesIcon = <FontIcon className="material-icons">favorite</FontIcon>;
+const nearbyIcon = <IconLocationOn />;
 
 import {
   blue300,
@@ -38,23 +45,22 @@ const WhiteSelector = (props) => (<div style={{width: "90%", margin: 'auto'}}>
         <ContentAdd color={blueGrey100} />
       </FloatingActionButton>
   <FloatingActionButton backgroundColor={"#F5FFFA"} style={fabstyle}>
-    <ContentAdd color={blueGrey100}  />
+    <ContentAdd color={blue300}  />
   </FloatingActionButton>
   <FloatingActionButton backgroundColor={"#FFFFF0"} style={fabstyle}>
         <ContentAdd color={blueGrey100} />
+    </FloatingActionButton>
+  <FloatingActionButton backgroundColor={"#FFFFE0"} style={fabstyle}>
+        <ContentAdd color={blueGrey100} />
       </FloatingActionButton>
-
       <FloatingActionButton backgroundColor={"#FFFAF0"} style={fabstyle}>
             <ContentAdd  color={blueGrey100} />
           </FloatingActionButton>
-          <FloatingActionButton backgroundColor={"#FFFFE0"} style={fabstyle}>
-                <ContentAdd color={blueGrey100} />
-              </FloatingActionButton>
    </div>)
 
 
 class NodeCard extends React.Component {
-  state = {avatarColour: blue300, onState: false}
+  state = {avatarColour: blue300, onState: false, selectedIndex: null}
 
   handleToggleState = ()=>{
     console.log("TOGGLE STATE")
@@ -67,6 +73,8 @@ class NodeCard extends React.Component {
     console.log(color.rgb)
     this.setState({avatarColour: color.hex})
   }
+  select = (index) => this.setState({selectedIndex: index});
+
 
   render(){
 return (<Card style={{width: "95%", margin: 'auto', marginTop: 15}}>
@@ -81,15 +89,37 @@ return (<Card style={{width: "95%", margin: 'auto', marginTop: 15}}>
 
      </CardText>
    <CardActions>
-     <RaisedButton fullWidth={true} label="Rainbow" /> <br/>
-     <RaisedButton fullWidth={true} label="Visualizer" />
 
-     <RaisedButton fullWidth={true} label="Set Group" />
-     <RaisedButton fullWidth={true} label="Change Name" />
-     <IconButton onTouchTap={this.handleToggleState} iconStyle={this.state.onState ? {color: this.state.avatarColour } : {color: "#000000" } } tooltip={!this.state.onState ? "TURN ON" : "TURN OFF"}>
-      <LightBultOutline />
-    </IconButton>
-
+    <BottomNavigation selectedIndex={this.state.selectedIndex}>
+             <BottomNavigationItem
+               label={this.state.onState ? "ON" : "OFF"}
+               icon={recentsIcon}
+               onTouchTap={() => {
+                 this.handleToggleState();
+                 !this.state.onState ? this.select(0) : this.select(null)
+                }}
+             />
+             <BottomNavigationItem
+               label="Rainbow"
+               icon={favoritesIcon}
+               onTouchTap={() => this.select(1)}
+             />
+             <BottomNavigationItem
+               label="Visualizer"
+               icon={nearbyIcon}
+               onTouchTap={() => this.select(2)}
+             />
+             <BottomNavigationItem
+               label="Group"
+               icon={nearbyIcon}
+               onTouchTap={() => this.select(3)}
+             />
+             <BottomNavigationItem
+               label="Name"
+               icon={nearbyIcon}
+               onTouchTap={() => this.select(4)}
+             />
+           </BottomNavigation>
    </CardActions>
  </Card>)
   }
