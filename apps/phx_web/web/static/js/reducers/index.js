@@ -18,7 +18,7 @@ export default function reducer(state = initialState, action) {
     return {...state, update_channel: action.channel}
 
   case c.OPEN_MODAL:
-    return {...state, modal: action.modal_name}
+    return {...state, modal: action.modal}
 
   case c.CLOSE_MODAL:
     return {...state, modal: null}

@@ -18,4 +18,4 @@ injectTapEventPlugin();
 import AppContainer from './containers';
 
 
-ReactDom.render(<Provider store={store}><AppContainer/></Provider>, document.getElementById('app'))
+ReactDom.render(<AppContainer/>, document.getElementById('app'))

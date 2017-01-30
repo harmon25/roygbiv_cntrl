@@ -3,8 +3,9 @@ import createLogger                      from 'redux-logger';
 import reducer                          from '../reducers'
 
 import { combineReducers }  from 'redux';
+import client from '../sources/apollo'
 
-const reducers = combineReducers({ app: reducer });
+const reducers = combineReducers({ app: reducer, apollo: client.reducer() });
 
 const loggerMiddleware = createLogger({
   level: 'info',

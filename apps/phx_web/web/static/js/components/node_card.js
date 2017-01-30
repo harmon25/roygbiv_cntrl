@@ -15,13 +15,16 @@ import IconAdd from 'material-ui/svg-icons/av/playlist-add';
 import IconEdit from 'material-ui/svg-icons/editor/mode-edit';
 import IconLooks from 'material-ui/svg-icons/image/looks';
 
-import setNodeColour from '../reducers/actions'
+import {setNodeColour, openModal, closeModal} from '../reducers/actions'
 import { bindActionCreators } from 'redux'
 
 
 import {Grid, Row, Col} from 'react-flexbox-grid'
 
 import { connect } from 'react-redux';
+
+import rgbHex from 'rgb-hex'
+import hexRgb from 'hex-rgb'
 
 
 import {
@@ -61,6 +64,18 @@ const avatar_comp = (colour)=>(
   <Avatar backgroundColor={colour} > A </Avatar>
 )
 
+function colListToObj(c){
+  return {r: c[0], g: c[1], b: c[2]}
+}
+
+function colObjToHex(o){
+  return rgbHex(o.r, o.g, o.b)
+}
+
+function colListToHex(c){
+  return colObjToHex(colListToObj(c))
+}
+
 
 class NodeCard extends React.Component {
   state = {avatarColour: blue300, onState: false, selectedIndex: null}
@@ -70,27 +85,34 @@ class NodeCard extends React.Component {
     this.setState({onState: !this.state.onState })
   }
 
+  toggleModal = ()=>{
+    dispatch()
+  }
+
   handleWhiteChange = (c)=>(()=>{
-    this.setState({avatarColour: c})
+    const {dispatch} = this.props
+    let rgb = hexRgb(c)
+    dispatch(setNodeColour(this.props.name, rgb[0],rgb[1],rgb[2]));
+
   })
 
   handleColourChange = (color, event)=>{
-    console.log(this.props)
-    console.log(this.props.name)
+    const {dispatch} = this.props
     console.log(color)
     console.log(color.rgb)
     const {r,g,b} = color.rgb
-    this.props.setNodeColour(this.props.name, r,g,b)
-    this.setState({avatarColour: color.hex})
+    dispatch(setNodeColour(this.props.name, r,g,b));
+    this.setState({avatarColour: color.hex })
   }
   select = (index) => this.setState({selectedIndex: index});
 
 
   render(){
+    console.log(this.props);
+    const {dispatch, colour} = this.props
 return (<Card style={{width: "95%", margin: 'auto', marginTop: 15}}>
    <CardHeader
      title={this.props.name}
-     subtitle={this.props.type}
      avatar={avatar_comp(this.state.avatarColour)}
    />
    <CardText>
@@ -122,12 +144,17 @@ return (<Card style={{width: "95%", margin: 'auto', marginTop: 15}}>
      <BottomNavigationItem
        label="Name"
        icon={<IconEdit/>}
-       onTouchTap={()=>{console.log("MODAL")}}
+       onTouchTap={()=>{
+         dispatch(openModal("node-name"))
+       }}
      />
      <BottomNavigationItem
        label="Group"
        icon={<IconAdd/>}
-       onTouchTap={()=>{console.log("MODAL")}}
+       onTouchTap={()=>{
+         dispatch(openModal("node-group"))
+
+       }}
      />
   </BottomNavigation>
    </CardActions>
@@ -136,10 +163,10 @@ return (<Card style={{width: "95%", margin: 'auto', marginTop: 15}}>
 }
 
 const mapStateToProps = (state) => ({
-  colour: state.app.colour,
+  colour: state.app.colour
 });
 
 const mapDispatchToProps = (dispatch) =>( bindActionCreators({ setNodeColour }, dispatch))
 
 //
-export default connect(mapStateToProps, mapDispatchToProps)(NodeCard)
+export default connect(mapStateToProps)(NodeCard)
