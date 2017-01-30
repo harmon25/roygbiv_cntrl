@@ -22,6 +22,8 @@
   "dependencies": {
     "apollo-client": "^0.8.0",
     "apollo-phoenix-websocket": "^0.4.1",
+    "classnames": "^2.2.5",
+    "flexboxgrid": "^6.3.1",
     "graphql-tag": "^1.2.3",
     "material-ui": "^0.16.7",
     "phoenix": "^1.2.1",
@@ -29,9 +31,12 @@
     "react-apollo": "^0.8.1",
     "react-color": "^2.11.1",
     "react-dom": "^15.4.2",
+    "react-flexbox-grid": "^0.10.2",
+    "react-grid-layout": "^0.13.9",
     "react-redux": "^5.0.2",
     "react-tap-event-plugin": "^2.0.1",
     "redux": "^3.6.0",
+    "redux-logger": "^2.7.4",
     "roboto-fontface": "^0.7.0"
   },
   "devDependencies": {

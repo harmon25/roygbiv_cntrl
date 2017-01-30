@@ -3,8 +3,8 @@ defmodule PhxWeb.GQL.Types do
 
 
    object :colour do
-    field :int, :integer
-    field :hex, :string
+    field :p_rgb, list_of(:integer)
+    field :c_rgb, list_of(:integer)
   end
 
    object :node do

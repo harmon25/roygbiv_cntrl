@@ -53,6 +53,8 @@ defmodule Roygbiv.Controls do
   defp send_control(node_name, action) do
     uri = craft_uri(name_to_ip(node_name), action)
     %{body: body} = HTTPoison.get!(uri)
-    {:ok, Node.build_state(body)}
+    node = Node.build_state(body)
+    PhxWeb.Endpoint.broadcast("led:data", "data", node )
+    {:ok, node}
   end
 end

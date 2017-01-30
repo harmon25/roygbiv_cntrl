@@ -3,6 +3,7 @@ defmodule PhxWeb.UserSocket do
 
   ## Channels
   channel "gql:query", PhxWeb.GQL.Channel
+  channel "led:data", PhxWeb.LED.Channel
 
   ## Transports
   transport :websocket, Phoenix.Transports.WebSocket

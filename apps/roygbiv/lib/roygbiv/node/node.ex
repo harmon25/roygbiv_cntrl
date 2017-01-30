@@ -61,7 +61,7 @@ defmodule Roygbiv.Node do
        {:ok, json_resp} ->
          %State{name: json_resp["device"],
                 state: node_state_to_atom(json_resp["state"]),
-                colour: %{hex: json_resp["hex"], int: json_resp["int"]}}
+                colour: %{c_rgb: json_resp["c_rgb"], p_rgb: json_resp["p_rgb"]}}
        {:error, reason} ->
          Logger.error reason
          nil
