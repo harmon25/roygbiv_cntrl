@@ -78,10 +78,13 @@ defmodule Roygbiv.Discovery do
           {:noreply, state}
       node ->
         node_w_ip = %Roygbiv.Node.State{node | ip: :inet.ntoa(ip)}
-
         {status, _pid} = Node.start_or_update(node_w_ip)
+        IO.inspect status
         Logger.info "Reply from #{node.name}: #{Atom.to_string(status)}"
-        {:noreply, state}
+        new_nodes = [node.name | state.nodes] |> Enum.sort() |> Enum.dedup()
+
+        {:noreply, %State{state | nodes: new_nodes  }}
     end
   end
+
 end
